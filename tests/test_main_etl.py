@@ -16,22 +16,15 @@ def mock_spark_env():
 
 
 def test_create_orchestrator_spark_session():
-    """Kiểm tra create_orchestrator_spark_session cấu hình appName, connector MongoDB và nén Snappy."""
-    with patch("src.data_pipeline.main_etl.SparkSession") as mock_spark_cls:
-        mock_builder = MagicMock()
-        mock_spark_cls.builder = mock_builder
-        mock_builder.appName.return_value = mock_builder
-        mock_builder.config.return_value = mock_builder
+    """Kiểm tra create_orchestrator_spark_session gọi get_spark_session với appName đúng."""
+    with patch("src.data_pipeline.main_etl.get_spark_session") as mock_get_spark:
         mock_session = MagicMock()
-        mock_builder.getOrCreate.return_value = mock_session
+        mock_get_spark.return_value = mock_session
 
         session = create_orchestrator_spark_session()
 
         assert session == mock_session
-        mock_builder.appName.assert_called_once_with("Main_ETL_Orchestrator")
-        mock_builder.config.assert_any_call("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:3.0.2")
-        mock_builder.config.assert_any_call("spark.sql.parquet.compression.codec", "snappy")
-        mock_builder.getOrCreate.assert_called_once()
+        mock_get_spark.assert_called_once_with("Main_ETL_Orchestrator")
 
 
 def test_run_etl_pipeline_success():

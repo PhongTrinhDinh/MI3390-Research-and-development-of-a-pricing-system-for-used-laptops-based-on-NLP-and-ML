@@ -47,17 +47,13 @@ def test_process_gold_layer_success(mock_spark_environment):
     mock_model_writer.overwrite.return_value = mock_model_writer
 
     with (
-        patch("src.data_pipeline.gold_layer.SparkSession") as mock_spark_cls,
+        patch("src.data_pipeline.gold_layer.get_spark_session", return_value=mock_spark) as mock_get_spark,
         patch("src.data_pipeline.gold_layer.Pipeline") as mock_pipeline_cls,
         patch("src.data_pipeline.gold_layer.Imputer") as mock_imputer_cls,
         patch("src.data_pipeline.gold_layer.StringIndexer") as mock_indexer_cls,
         patch("src.data_pipeline.gold_layer.OneHotEncoder") as mock_encoder_cls,
         patch("src.data_pipeline.gold_layer.VectorAssembler") as mock_assembler_cls,
     ):
-        mock_builder = MagicMock()
-        mock_spark_cls.builder = mock_builder
-        mock_builder.appName.return_value = mock_builder
-        mock_builder.getOrCreate.return_value = mock_spark
 
         mock_imputer_inst = MagicMock(name="ImputerInstance")
         mock_imputer_cls.return_value = mock_imputer_inst
@@ -79,8 +75,7 @@ def test_process_gold_layer_success(mock_spark_environment):
         df_out, model_out = process_gold_layer()
 
         # 1. Kiểm tra khởi tạo SparkSession
-        mock_builder.appName.assert_called_once_with("GoldLayer_FeatureEngineering")
-        mock_builder.getOrCreate.assert_called_once()
+        mock_get_spark.assert_called_once_with("GoldLayer_FeatureEngineering")
 
         # 2. Kiểm tra đọc từ Silver
         mock_spark.read.parquet.assert_called_once()
@@ -133,14 +128,9 @@ def test_process_gold_layer_error_handling(mock_spark_environment):
     mock_spark.read.parquet.side_effect = RuntimeError("Silver Parquet file corrupted or missing")
 
     with (
-        patch("src.data_pipeline.gold_layer.SparkSession") as mock_spark_cls,
+        patch("src.data_pipeline.gold_layer.get_spark_session", return_value=mock_spark),
         patch("src.data_pipeline.gold_layer.logger.error") as mock_logger_error,
     ):
-        mock_builder = MagicMock()
-        mock_spark_cls.builder = mock_builder
-        mock_builder.appName.return_value = mock_builder
-        mock_builder.getOrCreate.return_value = mock_spark
-
         with pytest.raises(RuntimeError, match="Silver Parquet file corrupted or missing"):
             process_gold_layer()
 

@@ -19,9 +19,9 @@ ENV/
 *.key
 
 # Data and generated model artifacts (keep large/local files out of Git)
-data/raw/
+#data/raw/
 data/interim/
-data/processed/
+#data/processed/
 datasets/
 artifacts/
 models/

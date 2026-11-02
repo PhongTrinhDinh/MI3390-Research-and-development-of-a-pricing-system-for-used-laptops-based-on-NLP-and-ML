@@ -1,5 +1,6 @@
 import os
 from src.utils.logger import get_logger
+from src.utils.spark_utils import get_spark_session
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, lit, when, coalesce, regexp_replace, regexp_extract, trim, lower, current_date, year, months_between, to_date
     
@@ -51,7 +52,7 @@ logger = get_logger(__name__, log_file="logs/etl_pipeline/silver.log")
 def process_silver_layer(spark: SparkSession = None):
     is_owner = False
     if spark is None:
-        spark = SparkSession.builder.appName("SilverLayer_Processing").getOrCreate()
+        spark = get_spark_session("SilverLayer_Processing")
         is_owner = True
 
     bronze_dir = os.getenv("DATALAKE_BRONZE_DIR", "./data/raw/bronze_layer")

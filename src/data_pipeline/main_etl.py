@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from pyspark.sql import SparkSession
 
 from src.utils.logger import get_logger
+from src.utils.spark_utils import get_spark_session
 from src.data_pipeline.bronze_layer import ingest_bronze_layer
 from src.data_pipeline.silver_layer import process_silver_layer
 from src.data_pipeline.gold_layer import process_gold_layer
@@ -16,17 +17,8 @@ logger = get_logger("ETL_Orchestrator", log_file="logs/etl_pipeline/main_etl.log
 
 
 def create_orchestrator_spark_session() -> SparkSession:
-    """
-    Khởi tạo SparkSession dùng chung cho toàn bộ pipeline ETL.
-    Cấu hình sẵn connector MongoDB và chuẩn nén Parquet Snappy.
-    """
-    mongo_connector_pkg = "org.mongodb.spark:mongo-spark-connector_2.12:3.0.2"
-    return (
-        SparkSession.builder.appName("Main_ETL_Orchestrator")
-        .config("spark.jars.packages", mongo_connector_pkg)
-        .config("spark.sql.parquet.compression.codec", "snappy")
-        .getOrCreate()
-    )
+    """Khởi tạo SparkSession dùng chung cho toàn bộ pipeline ETL thông qua spark_utils."""
+    return get_spark_session("Main_ETL_Orchestrator")
 
 
 def run_etl_pipeline(spark: SparkSession = None) -> dict:

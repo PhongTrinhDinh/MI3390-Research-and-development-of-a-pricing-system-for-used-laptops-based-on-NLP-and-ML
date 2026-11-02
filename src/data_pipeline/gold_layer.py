@@ -1,5 +1,6 @@
 import os
 from src.utils.logger import get_logger
+from src.utils.spark_utils import get_spark_session
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 from pyspark.sql.functions import (
@@ -24,7 +25,7 @@ logger = get_logger(__name__, log_file="logs/etl_pipeline/gold.log")
 def process_gold_layer(spark: SparkSession = None):
     is_owner = False
     if spark is None:
-        spark = SparkSession.builder.appName("GoldLayer_FeatureEngineering").getOrCreate()
+        spark = get_spark_session("GoldLayer_FeatureEngineering")
         is_owner = True
 
     silver_dir = os.getenv("DATALAKE_SILVER_DIR", "./data/processed/silver_layer")

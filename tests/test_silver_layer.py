@@ -41,17 +41,11 @@ def test_process_silver_layer_pipeline():
     mock_writer.option.return_value = mock_writer
     mock_writer.mode.return_value = mock_writer
 
-    with patch("src.data_pipeline.silver_layer.SparkSession") as mock_spark_cls:
-        mock_builder = MagicMock()
-        mock_spark_cls.builder = mock_builder
-        mock_builder.appName.return_value = mock_builder
-        mock_builder.getOrCreate.return_value = mock_spark
-
+    with patch("src.data_pipeline.silver_layer.get_spark_session", return_value=mock_spark) as mock_get_spark:
         res = process_silver_layer()
 
         # Kiểm tra cấu hình SparkSession
-        mock_builder.appName.assert_called_once_with("SilverLayer_Processing")
-        mock_builder.getOrCreate.assert_called_once()
+        mock_get_spark.assert_called_once_with("SilverLayer_Processing")
 
         # Kiểm tra đọc từ bronze
         mock_spark.read.parquet.assert_called_once()
