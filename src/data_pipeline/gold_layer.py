@@ -22,6 +22,11 @@ from pyspark.ml.feature import (
 logger = get_logger(__name__, log_file="logs/etl_pipeline/gold.log")
 
 
+def _safe_cast_float(str_col):
+    """Ép kiểu chuỗi sang float an toàn, trả về NULL nếu chuỗi rỗng hoặc NULL."""
+    return when((str_col.isNotNull()) & (trim(str_col) != ""), str_col.cast("float")).otherwise(lit(None))
+
+
 def process_gold_layer(spark: SparkSession = None):
     is_owner = False
     if spark is None:
@@ -51,16 +56,21 @@ def process_gold_layer(spark: SparkSession = None):
         # ----------------------------------------------------------------------
         # 2. Khôi phục các đặc trưng phần cứng cốt lõi: RAM & Ổ cứng (Storage)
         # ----------------------------------------------------------------------
-        # Trích xuất dung lượng RAM (GB)
-        ram_from_raw = regexp_extract(lower(col("raw_ram")), r"(\d+)\s*gb", 1).cast("float")
+        # Trích xuất dung lượng RAM (GB) an toàn
+        ram_str = regexp_extract(lower(col("raw_ram")), r"(\d+)\s*gb", 1)
+        ram_from_raw = _safe_cast_float(ram_str)
         df_hw = df_filtered.withColumn("ram_gb", ram_from_raw)
 
         # Trích xuất dung lượng Ổ cứng (GB): quy đổi TB -> GB (1 TB = 1024 GB)
-        storage_tb = regexp_extract(lower(col("raw_hard_drive")), r"(\d+(?:\.\d+)?)\s*tb", 1).cast("float") * 1024.0
-        storage_gb = regexp_extract(lower(col("raw_hard_drive")), r"(\d+)\s*gb", 1).cast("float")
+        storage_tb_str = regexp_extract(lower(col("raw_hard_drive")), r"(\d+(?:\.\d+)?)\s*tb", 1)
+        storage_tb = _safe_cast_float(storage_tb_str) * 1024.0
+
+        storage_gb_str = regexp_extract(lower(col("raw_hard_drive")), r"(\d+)\s*gb", 1)
+        storage_gb = _safe_cast_float(storage_gb_str)
+
         df_hw = df_hw.withColumn(
             "storage_gb",
-            when(storage_tb > 0, storage_tb).otherwise(storage_gb)
+            when((storage_tb.isNotNull()) & (storage_tb > 0), storage_tb).otherwise(storage_gb)
         ).withColumn(
             "storage_type",
             when(lower(col("raw_hard_drive_type")).contains("ssd"), lit("ssd"))

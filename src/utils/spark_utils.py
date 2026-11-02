@@ -34,6 +34,7 @@ def get_spark_session(app_name: str = "LaptopPricingPipeline") -> SparkSession:
     return (
         SparkSession.builder.appName(app_name)
         .config("spark.sql.parquet.compression.codec", "snappy")
+        .config("spark.sql.ansi.enabled", "false")
         .getOrCreate()
     )
 

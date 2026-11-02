@@ -44,6 +44,7 @@ def test_get_spark_session_factory():
 
         assert session == mock_session
         mock_builder.appName.assert_called_once_with("Test_App_Name")
-        mock_builder.config.assert_called_once_with("spark.sql.parquet.compression.codec", "snappy")
+        mock_builder.config.assert_any_call("spark.sql.parquet.compression.codec", "snappy")
+        mock_builder.config.assert_any_call("spark.sql.ansi.enabled", "false")
         mock_builder.getOrCreate.assert_called_once()
 
