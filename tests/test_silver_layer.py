@@ -242,3 +242,32 @@ def test_repair_status_and_upgrades():
 
     # "thay ssd 512gb" là nâng cấp linh kiện
     assert upgrade_re.search("đã nâng cấp ram 16gb và thay ssd 512gb") is not None
+
+
+def test_apple_macbook_brand_normalization():
+    """Kiểm tra chuẩn hóa: macbook không nằm trong hãng trực tiếp, suy luận về apple từ dòng máy."""
+    brand_direct_re = to_python_re(silver_patterns.BRAND_DIRECT_PATTERN)
+    line_re = to_python_re(silver_patterns.PRODUCT_LINE_PATTERN)
+
+    # 1. macbook không được nhận diện là direct brand
+    m_direct = brand_direct_re.search("bán macbook pro 2020 m1")
+    assert m_direct is None, "macbook không được xuất hiện như một brand_name độc lập"
+
+    # 2. apple được nhận diện trực tiếp
+    m_apple = brand_direct_re.search("bán apple macbook air")
+    assert m_apple is not None
+    assert m_apple.group(0).lower() == "apple"
+
+    # 3. macbook pro, macbook air, macbook retina đều thuộc product_line
+    assert line_re.search("macbook pro 13 2019") is not None
+    assert line_re.search("macbook air m1") is not None
+    assert line_re.search("macbook retina 12inh") is not None
+
+    # 4. Kiểm tra luật ánh xạ dòng máy sang hãng apple
+    matched_brand = None
+    for pattern_cond, brand_label in reversed(silver_patterns.BRAND_FROM_LINE_CONDITIONS):
+        if re.search(pattern_cond, "macbook pro", re.IGNORECASE):
+            matched_brand = brand_label
+            break
+    assert matched_brand == "apple"
+

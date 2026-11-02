@@ -74,7 +74,7 @@ def normalize_text_column(col_ref: Column) -> Column:
 # ==============================================================================
 
 # ----------------- Brand & Product Line -----------------
-BRAND_DIRECT_PATTERN = w(r"hp|dell|asus|acer|lenovo|apple|macbook|msi|microsoft|samsung|lg|toshiba|fujitsu|huawei|xiaomi")
+BRAND_DIRECT_PATTERN = w(r"hp|dell|asus|acer|lenovo|apple|msi|microsoft|samsung|lg|toshiba|fujitsu|huawei|xiaomi")
 
 PRODUCT_LINE_PATTERN = w(
     r"elitebook(?:\s*\d{3,4})?(?:\s*g\d{1,2})?|"
@@ -106,7 +106,7 @@ PRODUCT_LINE_PATTERN = w(
     r"swift(?:\s*(?:3|5|go|x))?|"
     r"predator(?:\s*(?:helios|triton))?|"
     r"surface(?:\s*(?:pro|laptop|book|go))?(?:\s*\d{1,2})?|"
-    r"macbook\s*(?:pro|air)"
+    r"macbook(?:\s*(?:pro|air|retina|12))?"
 )
 
 # Ánh xạ từ dòng máy sang thương hiệu

@@ -125,10 +125,19 @@ def process_silver_layer(spark: SparkSession = None):
         for pattern_cond, brand_label in reversed(BRAND_FROM_LINE_CONDITIONS):
             brand_inferred = when(prod_line_val.rlike(pattern_cond), lit(brand_label)).otherwise(brand_inferred)
 
-        brand_final = coalesce(brand_direct_val, brand_inferred)
-        brand_final_src = when(brand_direct_val.isNotNull(), brand_direct_src) \
-            .when(brand_inferred.isNotNull(), lit("inferred_from_line")) \
+        # Fallback từ mã danh mục pc_brand == 3 của Chợ Tốt (Apple/MacBook) nếu chưa nhận diện được
+        brand_pc_code = when(col("pc_brand") == 3, lit("apple")).otherwise(lit(None))
+
+        brand_final = coalesce(brand_direct_val, brand_inferred, brand_pc_code)
+        # Chốt chặn chuẩn hóa: hợp nhất 'macbook' về thương hiệu 'apple'
+        brand_final = when(lower(brand_final) == "macbook", lit("apple")).otherwise(brand_final)
+
+        brand_final_src = (
+            when(brand_direct_val.isNotNull(), brand_direct_src)
+            .when(brand_inferred.isNotNull(), lit("inferred_from_line"))
+            .when(brand_pc_code.isNotNull(), lit("pc_brand_code"))
             .otherwise(lit(None))
+        )
 
         # 4.2. CPU: Model, Vendor, Tier, Gen
         intel_m = extract_pref(title_c, desc_c, INTEL_MODEL_PATTERN, 1)
