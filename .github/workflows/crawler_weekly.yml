@@ -37,4 +37,32 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
           export PYTHONPATH=.
-          scrapy crawl chotot_laptop -s SETTINGS_MODULE=settings -s CLOSESPIDER_ITEMCOUNT=2000
+          scrapy crawl chotot_laptop -s SETTINGS_MODULE=settings -s CLOSESPIDER_ITEMCOUNT=2000
+
+      - name: Run PySpark Medallion ETL
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+        run: |
+          python -m src.data_pipeline.main_etl
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync Parquet Layers to AWS S3 Data Lake
+        run: |
+          DATE_TAG=$(date +'%Y-%m-%d')
+          BUCKET_NAME="chotot-laptop-datalake-2026"  # ĐỔI THÀNH TÊN BUCKET CỦA BẠN
+
+          echo "Đang đồng bộ Silver Layer lên S3..."
+          aws s3 sync data/processed/silver_layer/ s3://${BUCKET_NAME}/silver/date=${DATE_TAG}/
+
+          echo "Đang đồng bộ Gold Layer lên S3..."
+          # Lưu cả bản snapshot theo ngày và bản latest cho mô hình dùng ngay
+          aws s3 sync data/processed/gold_layer/ s3://${BUCKET_NAME}/gold/date=${DATE_TAG}/
+          aws s3 sync data/processed/gold_layer/ s3://${BUCKET_NAME}/gold/latest/ --delete
+
+          echo " Đồng bộ Data Lake thành công!"
