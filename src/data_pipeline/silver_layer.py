@@ -146,7 +146,14 @@ def process_silver_layer(spark: SparkSession = None):
         apple_m = extract_pref(title_c, desc_c, APPLE_M_PATTERN, 1)
 
         # Ưu tiên theo độ cụ thể và nguồn
-        cpu_model_val = coalesce(intel_m, intel_u, amd_m, apple_m)
+        cpu_model_raw = coalesce(intel_m, intel_u, amd_m, apple_m)
+        # Chuẩn hóa CPU Model:
+        # 1. AMD: r5-5500u, r5 5500u, r7 -> ryzen 5 5500u, ryzen 7
+        # 2. Apple: m1max -> m1 max, m3pro -> m3 pro, m4pro -> m4 pro
+        cpu_model_clean = regexp_replace(cpu_model_raw, r"^r([3579])[- ]?", "ryzen $1 ")
+        cpu_model_clean = regexp_replace(cpu_model_clean, r"^m([1-4])(pro|max|ultra)", "m$1 $2")
+        cpu_model_val = trim(regexp_replace(cpu_model_clean, r"\s+", " "))
+
         _, cpu_model_src = extract_pref(
             title_c, desc_c,
             f"(?:{INTEL_MODEL_PATTERN}|{INTEL_ULTRA_PATTERN}|{AMD_MODEL_PATTERN}|{APPLE_M_PATTERN})",
@@ -174,7 +181,14 @@ def process_silver_layer(spark: SparkSession = None):
         # 4.3. GPU: Model, Type
         gpu_disc = extract_pref(title_c, desc_c, GPU_DISCRETE_PATTERN, 1)
         gpu_integ = extract_pref(title_c, desc_c, GPU_INTEGRATED_PATTERN, 1)
-        gpu_model_val = coalesce(gpu_disc, gpu_integ)
+        gpu_model_raw = coalesce(gpu_disc, gpu_integ)
+        # Chuẩn hóa GPU Model: gtx1650 -> gtx 1650, rtx3080ti -> rtx 3080 ti, uhd graphiics -> uhd graphics
+        gpu_model_clean = regexp_replace(gpu_model_raw, r"^(rtx|gtx|mx)(\d{3,4})", "$1 $2")
+        gpu_model_clean = regexp_replace(gpu_model_clean, r"(\d{3,4})(ti|super)", "$1 $2")
+        gpu_model_clean = regexp_replace(gpu_model_clean, r"uhd\s*graphiics", "uhd graphics")
+        gpu_model_clean = regexp_replace(gpu_model_clean, r"intel\s*uhd", "uhd")
+        gpu_model_val = trim(regexp_replace(gpu_model_clean, r"\s+", " "))
+
         _, gpu_model_src = extract_pref(
             title_c, desc_c,
             f"(?:{GPU_DISCRETE_PATTERN}|{GPU_INTEGRATED_PATTERN})",
@@ -199,14 +213,28 @@ def process_silver_layer(spark: SparkSession = None):
         res_num_h = extract_pref(title_c, desc_c, RESOLUTION_NUM_PATTERN, 2).cast("integer")
         res_text = extract_pref(title_c, desc_c, RESOLUTION_TEXT_PATTERN, 1)
 
+        # Chuẩn hóa nhãn văn bản của độ phân giải
+        res_text_clean = (
+            when(res_text.rlike(r"full\s*hd\+|fhd\+|wuxga"), lit("fhd+"))
+            .when(res_text.rlike(r"full\s*hd|fhd"), lit("fhd"))
+            .when(res_text.rlike(r"qhd\+|wqhd|2\.5k|2k\+"), lit("qhd+"))
+            .when(res_text.rlike(r"2k|qhd"), lit("2k/qhd"))
+            .when(res_text.rlike(r"3k"), lit("3k"))
+            .when(res_text.rlike(r"4k|uhd"), lit("4k/uhd"))
+            .when(res_text.rlike(r"retina"), lit("retina"))
+            .when(res_text.rlike(r"hd\+"), lit("hd+"))
+            .when(res_text.rlike(r"\bhd\b"), lit("hd"))
+            .otherwise(res_text)
+        )
+
         resolution_val = (
             when((res_num_w == 1920) & (res_num_h == 1080), lit("fhd"))
             .when((res_num_w == 1920) & (res_num_h == 1200), lit("fhd+"))
-            .when((res_num_w == 2560) & (res_num_h == 1440), lit("qhd/2k"))
-            .when((res_num_w == 2560) & (res_num_h == 1600), lit("qhd+/2k+"))
+            .when((res_num_w == 2560) & (res_num_h == 1440), lit("2k/qhd"))
+            .when((res_num_w == 2560) & (res_num_h == 1600), lit("qhd+"))
             .when((res_num_w == 2880) & (res_num_h == 1800), lit("3k"))
             .when((res_num_w == 3840) & ((res_num_h == 2160) | (res_num_h == 2400)), lit("4k/uhd"))
-            .when(res_text.isNotNull(), res_text)
+            .when(res_text_clean.isNotNull(), res_text_clean)
             .otherwise(lit(None))
         )
 
@@ -228,9 +256,16 @@ def process_silver_layer(spark: SparkSession = None):
             condition_pct_raw
         ).otherwise(lit(None))
 
-        # 4.7. Origin
+        # 4.7. Origin (Gom nhóm: chinh_hang, xach_tay, unknown)
         origin_country_val = extract_pref(title_c, desc_c, ORIGIN_COUNTRY_PATTERN, 1)
-        origin_type_val = extract_pref(title_c, desc_c, ORIGIN_TYPE_PATTERN, 1)
+        origin_raw = extract_pref(title_c, desc_c, ORIGIN_TYPE_PATTERN, 1)
+        origin_type_val = (
+            when(origin_raw.rlike(r"chính\s*hãng|fpt|tgdd|thế\s*giới\s*di\s*động|viettel|vn/a"), lit("chinh_hang"))
+            .when(origin_raw.rlike(r"xách\s*tay|hàng\s*bãi|nhập\s*khẩu|ll/a|j/a|kh/a|za/a"), lit("xach_tay"))
+            .when(col("elt_origin") == 1, lit("chinh_hang"))
+            .when(col("elt_origin").isin(8, 5, 7, 10, 6, 3, 9, 4), lit("xach_tay"))
+            .otherwise(lit(None))
+        )
 
         # 4.8. Battery
         bat_pct_raw = extract_pref(title_c, desc_c, BATTERY_PCT_PATTERN, 1).cast("integer")
@@ -259,7 +294,20 @@ def process_silver_layer(spark: SparkSession = None):
             .when(w_y.isNotNull(), w_y * 12)
             .otherwise(lit(None))
         )
-        warranty_type_val = extract_pref(title_c, desc_c, WARRANTY_TYPE_PATTERN, 1)
+        warranty_type_raw = extract_pref(title_c, desc_c, WARRANTY_TYPE_PATTERN, 1)
+        warranty_type_val = (
+            when(warranty_type_raw.rlike(r"chính\s*hãng|applecare|hãng|care\+"), lit("chinh_hang"))
+            .when(warranty_type_raw.rlike(r"cửa\s*hàng|shop|bao\s*test"), lit("cua_hang"))
+            .otherwise(lit(None))
+        )
+        # Cờ nhị phân has_warranty: 1 nếu còn bảo hành, 0 nếu không có hoặc hết hạn
+        has_warranty_val = (
+            when(w_exp.isNotNull(), 0)
+            .when((warranty_months_val.isNotNull()) & (warranty_months_val > 0), 1)
+            .when(warranty_type_val.isNotNull(), 1)
+            .when(col("elt_warranty") > 1, 1)
+            .otherwise(0)
+        )
 
         # 4.10. Repair & Upgrade
         is_upgraded_val = when(extract_pref(title_c, desc_c, UPGRADE_PATTERN, 0).isNotNull(), 1).otherwise(lit(None))
@@ -282,6 +330,8 @@ def process_silver_layer(spark: SparkSession = None):
 
         # 4.12. Bundles (chỉ từ mô tả)
         bundles_val = extract_safe(desc_c, BUNDLES_PATTERN, 1)
+        # Cờ nhị phân has_bundle: 1 nếu có tặng kèm quà bất kỳ, 0 nếu không
+        has_bundle_val = when(bundles_val.isNotNull() & (trim(bundles_val) != ""), 1).otherwise(0)
 
         # 5. Gán toàn bộ đặc trưng vào DataFrame
         df_features = df_norm \
@@ -310,11 +360,13 @@ def process_silver_layer(spark: SparkSession = None):
             .withColumn("battery_condition", battery_condition_val) \
             .withColumn("warranty_months", warranty_months_val) \
             .withColumn("warranty_type", warranty_type_val) \
+            .withColumn("has_warranty", has_warranty_val) \
             .withColumn("is_upgraded", is_upgraded_val) \
             .withColumn("repair_status", repair_status_val) \
             .withColumn("year_production", year_production_val) \
             .withColumn("year_purchase", year_purchase_val) \
-            .withColumn("bundles", bundles_val)
+            .withColumn("bundles", bundles_val) \
+            .withColumn("has_bundle", has_bundle_val)
 
         # 6. Loại bỏ các cột văn bản gốc và trung gian
         df_silver = df_features.drop(

@@ -271,3 +271,36 @@ def test_apple_macbook_brand_normalization():
             break
     assert matched_brand == "apple"
 
+
+def test_entity_standardization_patterns():
+    """Kiểm tra các mẫu regex chuẩn hóa thực thể: AMD, Apple M, GPU, Resolution, Origin."""
+    amd_re = to_python_re(silver_patterns.AMD_MODEL_PATTERN)
+    apple_re = to_python_re(silver_patterns.APPLE_M_PATTERN)
+    gpu_disc_re = to_python_re(silver_patterns.GPU_DISCRETE_PATTERN)
+    res_re = to_python_re(silver_patterns.RESOLUTION_TEXT_PATTERN)
+    origin_re = to_python_re(silver_patterns.ORIGIN_TYPE_PATTERN)
+
+    # 1. AMD: bắt được cả r5 5500u và ryzen 5 5500u
+    assert amd_re.search("laptop r5 5500u 8gb") is not None
+    assert amd_re.search("laptop ryzen 5 5500u 8gb") is not None
+    assert amd_re.search("thinkpad r7 5800h") is not None
+
+    # 2. Apple M: bắt được cả m1 max, m1max, m3 pro, m3pro
+    assert apple_re.search("macbook pro m1 max 32gb") is not None
+    assert apple_re.search("macbook pro m3pro 18gb") is not None
+
+    # 3. GPU: bắt được gtx1650, gtx 1650, rtx 3080 ti
+    assert gpu_disc_re.search("card gtx 1650 4gb") is not None
+    assert gpu_disc_re.search("card rtx 3080 ti 16gb") is not None
+
+    # 4. Resolution: bắt được full hd, fhd, màn 2k, retina
+    assert res_re.search("màn hình 2k 120hz") is not None
+    assert res_re.search("độ phân giải full hd ips") is not None
+    assert res_re.search("màn retina siêu nét") is not None
+
+    # 5. Origin: bắt được chính hãng, vn/a, fpt, xách tay, ll/a
+    assert origin_re.search("hàng chính hãng fpt shop") is not None
+    assert origin_re.search("máy vn/a nguyên hộp") is not None
+    assert origin_re.search("bản xách tay ll/a mỹ") is not None
+
+

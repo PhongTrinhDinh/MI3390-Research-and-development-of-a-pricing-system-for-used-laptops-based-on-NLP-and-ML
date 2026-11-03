@@ -113,6 +113,8 @@ def process_gold_layer(spark: SparkSession = None):
             when(col("battery_cycles").isNotNull(), 1.0).otherwise(0.0)
         ).fillna({
             "warranty_months": 0.0,
+            "has_warranty": 0,
+            "has_bundle": 0,
             "touch_sensitive": 0,
             "is_new_seal": 0,
             "is_like_new": 0,
@@ -148,6 +150,8 @@ def process_gold_layer(spark: SparkSession = None):
             "is_upgraded",
             "is_seller_rating_missing",
             "is_battery_cycle_known",
+            "has_warranty",
+            "has_bundle",
             "gift_mouse",
             "gift_bag",
             "gift_charger",
