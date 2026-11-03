@@ -1,48 +1,51 @@
-name: Weekly Laptop Crawler
+name: Weekly Laptop Crawler & Medallion ETL to S3
 
 on:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 * * 1'  # 00:00 Thứ 2 hàng tuần (UTC)
   workflow_dispatch:
 
 jobs:
-  crawl:
+  pipeline:
     runs-on: ubuntu-latest
-    
-    # Ép tất cả các bước chạy bên dưới phải đứng ở thư mục crawler
-    defaults:
-      run:
-        working-directory: ./crawler
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Java for PySpark
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          # Bật lại cache mượt mà bằng cách chỉ rõ đường dẫn file
-          cache-dependency-path: 'requirements-crawler.txt'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements-crawler.txt
+          pip install -r crawler/requirements-crawler.txt
+          pip install pyspark==4.2.1 python-dotenv
 
       - name: Run Scrapy Crawler
-        # THÊM DÒNG NÀY ĐỂ CHUI VÀO THƯ MỤC CRAWLER CHỨA FILE scrapy.cfg
         working-directory: ./crawler
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DATABASE: ${{ secrets.MONGO_DATABASE || 'scrapy_db' }}
         run: |
           export PYTHONPATH=.
           scrapy crawl chotot_laptop -s SETTINGS_MODULE=settings -s CLOSESPIDER_ITEMCOUNT=2000
 
-      - name: Run PySpark Medallion ETL
+      - name: Run PySpark Medallion ETL (Bronze -> Silver -> Gold)
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
+          MONGO_DB: ${{ secrets.MONGO_DATABASE || 'scrapy_db' }}
+          MONGO_COLL_RAW: "Laptop_Crawler"
         run: |
+          export PYTHONPATH=.
           python -m src.data_pipeline.main_etl
 
       - name: Configure AWS Credentials
@@ -50,19 +53,33 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ secrets.AWS_REGION || 'ap-southeast-1' }}
 
-      - name: Sync Parquet Layers to AWS S3 Data Lake
+      - name: Sync Parquet Layers & Models to AWS S3 Data Lake
+        env:
+          BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET || 'chotot-laptop-datalake-2026' }}
         run: |
           DATE_TAG=$(date +'%Y-%m-%d')
-          BUCKET_NAME="chotot-laptop-datalake-2026"  # ĐỔI THÀNH TÊN BUCKET CỦA BẠN
+          echo "Bắt đầu đồng bộ Data Lake lên S3: s3://${BUCKET_NAME} ..."
 
-          echo "Đang đồng bộ Silver Layer lên S3..."
-          aws s3 sync data/processed/silver_layer/ s3://${BUCKET_NAME}/silver/date=${DATE_TAG}/
+          echo "1. Đồng bộ Bronze Layer..."
+          if [ -d "data/raw/bronze_layer" ]; then
+            aws s3 sync data/raw/bronze_layer/ s3://${BUCKET_NAME}/bronze/date=${DATE_TAG}/
+          fi
 
-          echo "Đang đồng bộ Gold Layer lên S3..."
-          # Lưu cả bản snapshot theo ngày và bản latest cho mô hình dùng ngay
-          aws s3 sync data/processed/gold_layer/ s3://${BUCKET_NAME}/gold/date=${DATE_TAG}/
-          aws s3 sync data/processed/gold_layer/ s3://${BUCKET_NAME}/gold/latest/ --delete
+          echo "2. Đồng bộ Silver Layer..."
+          if [ -d "data/processed/silver_layer" ]; then
+            aws s3 sync data/processed/silver_layer/ s3://${BUCKET_NAME}/silver/date=${DATE_TAG}/
+          fi
 
-          echo " Đồng bộ Data Lake thành công!"
+          echo "3. Đồng bộ Gold Layer (Features & PipelineModel)..."
+          if [ -d "data/features/gold_layer" ]; then
+            aws s3 sync data/features/gold_layer/ s3://${BUCKET_NAME}/gold/date=${DATE_TAG}/
+            aws s3 sync data/features/gold_layer/ s3://${BUCKET_NAME}/gold/latest/ --delete
+          fi
+
+          if [ -d "models/transformers" ]; then
+            aws s3 sync models/transformers/ s3://${BUCKET_NAME}/models/transformers/latest/ --delete
+          fi
+
+          echo "Đồng bộ AWS S3 Data Lake hoàn tất!"
