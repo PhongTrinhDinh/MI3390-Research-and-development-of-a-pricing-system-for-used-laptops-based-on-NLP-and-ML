@@ -104,8 +104,8 @@ def test_process_gold_layer_success(mock_spark_environment):
         mock_pipeline_inst.fit.assert_called_once()
         mock_pipeline_model.transform.assert_called_once()
 
-        # 7. Kiểm tra select đúng tên cột: post_id, features, target_price (không dùng list_id cũ)
-        mock_df_transformed.select.assert_called_once_with("post_id", "features", "target_price")
+        # 7. Kiểm tra select đúng tên cột: post_id, features, target_price, log_price
+        mock_df_transformed.select.assert_called_once_with("post_id", "features", "target_price", "log_price")
 
         # 8. Kiểm tra lưu dữ liệu Gold Parquet với snappy compression
         mock_df_transformed.write.format.assert_called_once_with("parquet")

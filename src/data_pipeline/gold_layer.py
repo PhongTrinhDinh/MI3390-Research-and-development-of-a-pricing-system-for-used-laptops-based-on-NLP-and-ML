@@ -11,6 +11,7 @@ from pyspark.sql.functions import (
     lower,
     trim,
     regexp_extract,
+    log1p,
 )
 from pyspark.ml.feature import (
     StringIndexer,
@@ -79,51 +80,36 @@ def process_gold_layer(spark: SparkSession = None):
         )
 
         # ----------------------------------------------------------------------
-        # 3. Đơn giản hóa NLP Quà tặng (bundles) thành các cờ nhị phân
+        # 3. Lọc bỏ các cột Data Lineage (_src) và Xử lý Missing Values
         # ----------------------------------------------------------------------
-        # Thay vì 500 chiều TF-IDF thưa thớt, trích xuất 4 cờ nhị phân thiết thực:
-        # Chuột, Balo/Túi chống sốc, Sạc, và Có quà khác.
-        bundle_lower = lower(coalesce(col("bundles"), lit("")))
-        df_gifts = df_hw.withColumn(
-            "gift_mouse",
-            when(bundle_lower.rlike(r"chuột|mouse"), 1.0).otherwise(0.0)
-        ).withColumn(
-            "gift_bag",
-            when(bundle_lower.rlike(r"balo|ba\s*lô|túi|cặp"), 1.0).otherwise(0.0)
-        ).withColumn(
-            "gift_charger",
-            when(bundle_lower.rlike(r"sạc|cáp|adapter"), 1.0).otherwise(0.0)
-        ).withColumn(
-            "gift_other",
-            when(col("bundles").isNotNull() & (trim(col("bundles")) != ""), 1.0).otherwise(0.0)
-        )
-
-        # ----------------------------------------------------------------------
-        # 4. Xử lý Missing values theo đúng thực tế miền nghiệp vụ
-        # ----------------------------------------------------------------------
-        # - warranty_months: Laptop cũ không nhắc đến bảo hành thì 90% là hết hạn -> điền 0.0
-        # - battery_cycles: Tạo cờ is_battery_cycle_known, tránh chế tác số chu kỳ sạc ảo cho Windows
-        # - touch_sensitive: Missing xem như không có cảm ứng -> 0.0
         # - Loại bỏ các cột _src (Data Lineage không dùng trực tiếp làm feature huấn luyện)
-        cols_to_drop = [c for c in df_gifts.columns if c.endswith("_src")]
-        df_preprocessed = df_gifts.drop(*cols_to_drop)
-
-        df_preprocessed = df_preprocessed.withColumn(
-            "is_battery_cycle_known",
-            when(col("battery_cycles").isNotNull(), 1.0).otherwise(0.0)
-        ).fillna({
-            "warranty_months": 0.0,
+        # - has_warranty & has_bundle: Đã được chuẩn hóa nhị phân tinh gọn từ Silver Layer
+        # - is_like_new, is_upgraded, seller_sold_count: Điền mặc định 0 nếu thiếu
+        cols_to_drop = [c for c in df_hw.columns if c.endswith("_src")]
+        df_preprocessed = df_hw.drop(*cols_to_drop).fillna({
             "has_warranty": 0,
             "has_bundle": 0,
-            "touch_sensitive": 0,
-            "is_new_seal": 0,
             "is_like_new": 0,
             "is_upgraded": 0,
-            "is_seller_rating_missing": 1,
             "seller_sold_count": 0,
         })
 
-        # Điền missing cho các biến phân loại dạng text thành "unknown"
+        # ----------------------------------------------------------------------
+        # 4. Phân nhóm Đặc trưng (Features Selection theo EDA)
+        # ----------------------------------------------------------------------
+        # A. Nhóm đặc trưng cốt lõi (Must-have features) & Bổ trợ giá trị (Value-add features):
+        #    - Numeric: ram_gb (0.739), storage_gb (0.687), cpu_gen (0.612), screen_size_inch (0.283),
+        #               seller_sold_count (0.166), year_production
+        #    - Categorical: brand_name, product_line, cpu_vendor, cpu_model, gpu_type, gpu_model,
+        #                   storage_type, resolution, origin_type, repair_status, region_name
+        #    - Binary: has_warranty, has_bundle, is_like_new, is_upgraded
+        #
+        # B. Đã loại bỏ các biến thiếu cực đoan (>95% missing) & tương quan gần 0 (r ≈ 0):
+        #    - Thiếu cực đoan: year_purchase (99.8%), battery_cycles/hours/pct (>99%), condition_pct (97.8%),
+        #                      origin_country (95.2%), is_new_seal (98.8%), battery_condition
+        #    - Tương quan r ≈ 0: seller_rating (0.002), is_seller_rating_missing, touch_sensitive (0.043)
+        #    - Trùng lặp/Đã gom nhóm: warranty_months, warranty_type -> has_warranty; bundles/gift_* -> has_bundle
+
         categorical_cols = [
             "brand_name",
             "product_line",
@@ -134,43 +120,25 @@ def process_gold_layer(spark: SparkSession = None):
             "storage_type",
             "resolution",
             "origin_type",
-            "origin_country",
-            "battery_condition",
-            "warranty_type",
             "repair_status",
             "region_name",
         ]
         df_clean = df_preprocessed.fillna({c: "unknown" for c in categorical_cols})
 
-        # Chuẩn hóa các cột nhị phân sang kiểu Float
         binary_cols = [
-            "touch_sensitive",
-            "is_new_seal",
-            "is_like_new",
-            "is_upgraded",
-            "is_seller_rating_missing",
-            "is_battery_cycle_known",
             "has_warranty",
             "has_bundle",
-            "gift_mouse",
-            "gift_bag",
-            "gift_charger",
-            "gift_other",
+            "is_like_new",
+            "is_upgraded",
         ]
         for c in binary_cols:
             df_clean = df_clean.withColumn(c, col(c).cast("float"))
 
-        # Chuẩn hóa các cột số học sang kiểu Float
         numeric_cols = [
             "ram_gb",
             "storage_gb",
+            "cpu_gen",
             "screen_size_inch",
-            "condition_pct",
-            "battery_pct",
-            "battery_cycles",
-            "battery_hours",
-            "warranty_months",
-            "seller_rating",
             "seller_sold_count",
             "year_production",
         ]
@@ -223,7 +191,10 @@ def process_gold_layer(spark: SparkSession = None):
         pipeline_model = pipeline.fit(df_clean)
         df_gold = pipeline_model.transform(df_clean)
 
-        df_gold_output = df_gold.select("post_id", "features", "target_price")
+        # Tạo biến mục tiêu chuẩn hóa Log-Price song song với target_price
+        df_gold = df_gold.withColumn("log_price", log1p(col("target_price")))
+
+        df_gold_output = df_gold.select("post_id", "features", "target_price", "log_price")
 
         logger.info(f"Saving Gold features Parquet to: {gold_dir}")
         os.makedirs(gold_dir, exist_ok=True)
