@@ -53,11 +53,11 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION || 'ap-southeast-1' }}
+          aws-region: ${{ secrets.AWS_REGION || 'ap-southeast-2' }}
 
       - name: Sync Parquet Layers & Models to AWS S3 Data Lake
         env:
-          BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET || 'chotot-laptop-datalake-2026' }}
+          BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET || 'chotot-laptop-datalake-2026-155079499635-ap-southeast-2-an' }}
         run: |
           DATE_TAG=$(date +'%Y-%m-%d')
           echo "Bắt đầu đồng bộ Data Lake lên S3: s3://${BUCKET_NAME} ..."
