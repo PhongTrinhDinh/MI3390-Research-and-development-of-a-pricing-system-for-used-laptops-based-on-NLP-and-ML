@@ -1,4 +1,4 @@
-# 💻 Used Laptop Valuation & Intelligence Platform (Hệ Thống Định Giá & Phân Tích Thị Trường Laptop Cũ)
+# 💻 Research and development of a pricing system for used laptops based on NLP and ML
 
 [![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Apache Spark](https://img.shields.io/badge/Apache%20Spark-4.2.1-E25A1C?style=for-the-badge&logo=apachespark&logoColor=white)](https://spark.apache.org/)
