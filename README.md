@@ -422,6 +422,6 @@ Từ dữ liệu đã làm sạch ở tầng Silver, phân tích hệ số tươ
 ## 👨‍💻 Tác Giả & Liên Hệ
 - **Họ và tên**: Trịnh Đình Phong
 - **Đồ án**: Đồ án 2 (MI3390) - Khoa Toán - Tin, Đại học Bách Khoa Hà Nội (HUST).
-- **Email**: phong.td.hust@gmail.com / phong.td23xxxx@sis.hust.edu.vn
-- **GitHub**: [github.com/trinhdinhphong](https://github.com/)
+- **Email**: trinhdinhphong2005@gmail.com
+- **GitHub**: [github.com/PhongTrinhDinh]
 
