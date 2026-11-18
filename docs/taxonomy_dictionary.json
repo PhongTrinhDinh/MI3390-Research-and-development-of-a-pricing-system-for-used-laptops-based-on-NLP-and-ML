@@ -1,0 +1,673 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.1.0",
+  "metadata": {
+    "domain": "laptops_electronics",
+    "description": "Taxonomy mapping dictionary for laptops, PC hardware, and consumer electronics",
+    "author": "Antigravity Taxonomy Engine",
+    "updated_at": "2026-11-18"
+  },
+  "brands": [
+    {
+      "canonical_name": "Apple",
+      "aliases": ["apple", "apple inc"],
+      "default_os": "macOS",
+      "default_cpu_brand": "Apple"
+    },
+    {
+      "canonical_name": "ASUS",
+      "aliases": ["asus", "asustek"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Lenovo",
+      "aliases": ["lenovo"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Dell",
+      "aliases": ["dell", "dell inc"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "HP",
+      "aliases": ["hp", "hewlett packard", "hewlett-packard"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Acer",
+      "aliases": ["acer"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "MSI",
+      "aliases": ["msi", "micro-star international"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Gigabyte",
+      "aliases": ["gigabyte"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Microsoft",
+      "aliases": ["microsoft"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "LG",
+      "aliases": ["lg", "lg electronics"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Thunderobot",
+      "aliases": ["thunderobot"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Samsung",
+      "aliases": ["samsung"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Huawei",
+      "aliases": ["huawei"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Avita",
+      "aliases": ["avita"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Fujitsu",
+      "aliases": ["fujitsu"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Masstel",
+      "aliases": ["masstel"],
+      "default_os": "Windows 11"
+    },
+    {
+      "canonical_name": "Chuwi",
+      "aliases": ["chuwi"],
+      "default_os": "Windows 11"
+    }
+  ],
+  "series": [
+    {
+      "canonical_name": "MacBook Air",
+      "brand": "Apple",
+      "aliases": ["macbook air", "mac book air", "mb air", "mba"],
+      "category": "Ultrabook"
+    },
+    {
+      "canonical_name": "MacBook Pro",
+      "brand": "Apple",
+      "aliases": ["macbook pro", "mac book pro", "mb pro", "mbp"],
+      "category": "Professional"
+    },
+    {
+      "canonical_name": "MacBook Neo",
+      "brand": "Apple",
+      "aliases": ["macbook neo", "mac book neo", "neo 13"],
+      "category": "Entry Ultrabook"
+    },
+    {
+      "canonical_name": "Mac mini",
+      "brand": "Apple",
+      "aliases": ["mac mini", "macmini"],
+      "category": "Mini PC"
+    },
+    {
+      "canonical_name": "Mac Studio",
+      "brand": "Apple",
+      "aliases": ["mac studio", "macstudio"],
+      "category": "Workstation PC"
+    },
+    {
+      "canonical_name": "Mac Pro",
+      "brand": "Apple",
+      "aliases": ["mac pro", "macpro"],
+      "category": "Workstation PC"
+    },
+    {
+      "canonical_name": "iMac",
+      "brand": "Apple",
+      "aliases": ["imac pro", "imac"],
+      "category": "All-in-One"
+    },
+    {
+      "canonical_name": "Studio Display",
+      "brand": "Apple",
+      "aliases": ["studio display xdr", "studio display"],
+      "category": "Monitor"
+    },
+    {
+      "canonical_name": "Vivobook",
+      "brand": "ASUS",
+      "aliases": ["vivobook s", "vivobook go", "vivobook pro", "vivobook", "vivo book", "vibobook"],
+      "category": "Mainstream / Thin & Light"
+    },
+    {
+      "canonical_name": "Zenbook",
+      "brand": "ASUS",
+      "aliases": ["zenbook duo", "zenbook pro", "zenbook flip", "zenbook s", "zenbook", "zen book"],
+      "category": "Premium Ultrabook"
+    },
+    {
+      "canonical_name": "TUF Gaming",
+      "brand": "ASUS",
+      "aliases": ["tuf gaming a15", "tuf gaming a16", "tuf gaming f15", "tuf gaming f16", "tuf gaming", "asus tuf", "tuf", "asus gaming fx", "asus gaming fa", "gaming fx", "gaming fa"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "ROG",
+      "brand": "ASUS",
+      "aliases": ["rog zephyrus", "rog strix", "rog flow", "rog ally", "rog"],
+      "category": "Enthusiast Gaming"
+    },
+    {
+      "canonical_name": "Gaming V16",
+      "brand": "ASUS",
+      "aliases": ["gaming v16", "asus gaming v16", "v3607"],
+      "category": "Mainstream Gaming"
+    },
+    {
+      "canonical_name": "ExpertBook",
+      "brand": "ASUS",
+      "aliases": ["expertbook", "expert book"],
+      "category": "Business"
+    },
+    {
+      "canonical_name": "ProArt",
+      "brand": "ASUS",
+      "aliases": ["proart", "pro art"],
+      "category": "Creator"
+    },
+    {
+      "canonical_name": "ASUS Flip",
+      "brand": "ASUS",
+      "aliases": ["br1100fka", "br1100", "asus flip"],
+      "category": "Education 2-in-1"
+    },
+    {
+      "canonical_name": "ASUS X Series",
+      "brand": "ASUS",
+      "aliases": ["x509ja", "x409ja", "x509", "x409", "s533ea", "s533"],
+      "category": "Mainstream"
+    },
+    {
+      "canonical_name": "IdeaPad Slim",
+      "brand": "Lenovo",
+      "aliases": ["ideapad slim 3", "ideapad slim 5", "ideapad slim", "idea pad slim"],
+      "category": "Mainstream / Thin & Light"
+    },
+    {
+      "canonical_name": "IdeaPad",
+      "brand": "Lenovo",
+      "aliases": ["ideapad gaming", "ideapad flex", "ideapad pro", "ideapad", "idea pad"],
+      "category": "Mainstream"
+    },
+    {
+      "canonical_name": "LOQ",
+      "brand": "Lenovo",
+      "aliases": ["loq 15", "loq 16", "loq"],
+      "category": "Entry Gaming"
+    },
+    {
+      "canonical_name": "Legion",
+      "brand": "Lenovo",
+      "aliases": ["legion pro 7", "legion pro 5", "legion slim 5", "legion 5", "legion 7", "legion 9", "legion"],
+      "category": "Enthusiast Gaming"
+    },
+    {
+      "canonical_name": "ThinkPad",
+      "brand": "Lenovo",
+      "aliases": ["thinkpad x1 carbon", "thinkpad e14", "thinkpad e16", "thinkpad t14", "thinkpad l14", "thinkpad", "think pad"],
+      "category": "Enterprise / Business"
+    },
+    {
+      "canonical_name": "ThinkBook",
+      "brand": "Lenovo",
+      "aliases": ["thinkbook 14", "thinkbook 16", "thinkbook", "think book"],
+      "category": "SMB / Business"
+    },
+    {
+      "canonical_name": "Yoga",
+      "brand": "Lenovo",
+      "aliases": ["yoga slim 7", "yoga pro 7", "yoga pro 9", "yoga 7", "yoga 9", "yoga"],
+      "category": "2-in-1 / Premium"
+    },
+    {
+      "canonical_name": "Lenovo Education",
+      "brand": "Lenovo",
+      "aliases": ["lenovo 100e", "100e gen", "100e"],
+      "category": "Education"
+    },
+    {
+      "canonical_name": "Inspiron",
+      "brand": "Dell",
+      "aliases": ["dell 15 dc15250", "dell 14 dc14250", "dell 16 dc16250", "dell 15 dc15255", "dell 14 dc14255", "dell 16 plus", "inspiron 14", "inspiron 15", "inspiron 16", "inspiron", "dell 15", "dell 14", "dell 16"],
+      "category": "Mainstream"
+    },
+    {
+      "canonical_name": "Vostro",
+      "brand": "Dell",
+      "aliases": ["vostro 14", "vostro 15", "vostro 16", "vostro 3420", "vostro 3520", "vostro"],
+      "category": "Small Business"
+    },
+    {
+      "canonical_name": "Latitude",
+      "brand": "Dell",
+      "aliases": ["latitude 7400", "latitude 5400", "latitude 3400", "latitude 7300", "latitude"],
+      "category": "Enterprise Business"
+    },
+    {
+      "canonical_name": "Dell Pro",
+      "brand": "Dell",
+      "aliases": ["dell pro 15 essential", "dell pro 13 plus", "dell pro 15", "dell pro 14", "dell pro"],
+      "category": "Essential Business"
+    },
+    {
+      "canonical_name": "G-Series",
+      "brand": "Dell",
+      "aliases": ["dell g15", "dell g16", "dell g7", "dell g5", "dell g3", "g15", "g16", "g7", "g5"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "XPS",
+      "brand": "Dell",
+      "aliases": ["xps 13", "xps 14", "xps 15", "xps 16", "xps 17", "xps"],
+      "category": "Premium Ultrabook"
+    },
+    {
+      "canonical_name": "Alienware",
+      "brand": "Dell",
+      "aliases": ["alienware m16", "alienware m18", "alienware x14", "alienware x16", "alienware"],
+      "category": "Flagship Gaming"
+    },
+    {
+      "canonical_name": "Precision",
+      "brand": "Dell",
+      "aliases": ["precision 3580", "precision 5570", "precision"],
+      "category": "Mobile Workstation"
+    },
+    {
+      "canonical_name": "Omnibook",
+      "brand": "HP",
+      "aliases": ["omnibook 5 ai", "omnibook 7", "omnibook x", "omnibook ultra", "omnibook 5", "omnibook"],
+      "category": "AI PC / Ultrabook"
+    },
+    {
+      "canonical_name": "Victus",
+      "brand": "HP",
+      "aliases": ["victus 15", "victus 16", "hp victus", "victus"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "Omen",
+      "brand": "HP",
+      "aliases": ["omen 16", "omen 17", "hp omen", "omen"],
+      "category": "Enthusiast Gaming"
+    },
+    {
+      "canonical_name": "Pavilion",
+      "brand": "HP",
+      "aliases": ["pavilion plus", "pavilion aero", "pavilion 14", "pavilion 15", "pavilion"],
+      "category": "Mainstream"
+    },
+    {
+      "canonical_name": "Envy",
+      "brand": "HP",
+      "aliases": ["envy x360", "envy 16", "envy 14", "envy"],
+      "category": "Premium / 2-in-1"
+    },
+    {
+      "canonical_name": "Spectre",
+      "brand": "HP",
+      "aliases": ["spectre x360", "spectre"],
+      "category": "Flagship Ultrabook"
+    },
+    {
+      "canonical_name": "Dragonfly",
+      "brand": "HP",
+      "aliases": ["hp dragonfly g4", "hp dragonfly", "dragonfly g4", "dragonfly"],
+      "category": "Executive Ultrabook"
+    },
+    {
+      "canonical_name": "ProBook",
+      "brand": "HP",
+      "aliases": ["probook 440", "probook 450", "probook 445", "probook 455", "probook"],
+      "category": "Business"
+    },
+    {
+      "canonical_name": "EliteBook",
+      "brand": "HP",
+      "aliases": ["elitebook 840", "elitebook 845", "elitebook 640", "elitebook 1040", "elitebook"],
+      "category": "Enterprise Business"
+    },
+    {
+      "canonical_name": "HP Essential",
+      "brand": "HP",
+      "aliases": ["hp 250r", "hp 245", "hp 240", "hp 250", "hp 15s", "hp 14s", "hp 14", "hp 15", "hp ai 14", "250 g9", "240 g9", "245 g10", "15s", "14s"],
+      "category": "Budget / Essential"
+    },
+    {
+      "canonical_name": "Nitro",
+      "brand": "Acer",
+      "aliases": ["nitro v 15", "nitro v 16", "nitro propanel", "nitro 5", "nitro 16", "nitro v", "nitro"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "Predator",
+      "brand": "Acer",
+      "aliases": ["predator helios neo", "predator helios", "predator triton", "predator"],
+      "category": "Enthusiast Gaming"
+    },
+    {
+      "canonical_name": "Aspire Go",
+      "brand": "Acer",
+      "aliases": ["aspire go 15", "aspire go 14", "aspire go"],
+      "category": "Entry / Student"
+    },
+    {
+      "canonical_name": "Aspire",
+      "brand": "Acer",
+      "aliases": ["gaming aspire 7", "aspire 7", "aspire 5", "aspire 3", "aspire lite", "aspire"],
+      "category": "Mainstream"
+    },
+    {
+      "canonical_name": "Swift",
+      "brand": "Acer",
+      "aliases": ["swift air 14", "swift go 14", "swift go 16", "swift x", "swift 3", "swift"],
+      "category": "Thin & Light Ultrabook"
+    },
+    {
+      "canonical_name": "Modern",
+      "brand": "MSI",
+      "aliases": ["modern 14", "modern 15", "modern"],
+      "category": "Thin & Light"
+    },
+    {
+      "canonical_name": "Prestige",
+      "brand": "MSI",
+      "aliases": ["prestige 13 ai evo", "prestige 14", "prestige 16", "ps42", "prestige"],
+      "category": "Premium Business"
+    },
+    {
+      "canonical_name": "Cyborg",
+      "brand": "MSI",
+      "aliases": ["cyborg 15", "cyborg 14", "cyborg"],
+      "category": "Cyberpunk Gaming"
+    },
+    {
+      "canonical_name": "Katana",
+      "brand": "MSI",
+      "aliases": ["katana 15", "katana a15", "katana 17", "katana"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "Venture",
+      "brand": "MSI",
+      "aliases": ["venture 14 ai", "venture 15 ai", "venture 14", "venture 15", "venture"],
+      "category": "AI Thin & Light"
+    },
+    {
+      "canonical_name": "Bravo",
+      "brand": "MSI",
+      "aliases": ["bravo 15", "bravo"],
+      "category": "AMD Gaming"
+    },
+    {
+      "canonical_name": "Sword",
+      "brand": "MSI",
+      "aliases": ["sword 16", "sword 17", "sword"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "Titan",
+      "brand": "MSI",
+      "aliases": ["titan 18", "titan gt77", "titan"],
+      "category": "Flagship Workstation / Gaming"
+    },
+    {
+      "canonical_name": "Stealth",
+      "brand": "MSI",
+      "aliases": ["stealth 14", "stealth 16", "stealth 18", "stealth studio", "stealth"],
+      "category": "Slim Gaming"
+    },
+    {
+      "canonical_name": "Raider",
+      "brand": "MSI",
+      "aliases": ["raider ge78", "raider ge68", "raider"],
+      "category": "Enthusiast Gaming"
+    },
+    {
+      "canonical_name": "Thin",
+      "brand": "MSI",
+      "aliases": ["thin 15", "gf63 thin", "thin gf63", "thin"],
+      "category": "Budget Gaming"
+    },
+    {
+      "canonical_name": "Crosshair",
+      "brand": "MSI",
+      "aliases": ["crosshair 16", "crosshair"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "Vector",
+      "brand": "MSI",
+      "aliases": ["vector 16", "vector gp68", "vector"],
+      "category": "Performance Gaming"
+    },
+    {
+      "canonical_name": "Surface Pro",
+      "brand": "Microsoft",
+      "aliases": ["surface pro 11", "surface pro 10", "surface pro 9", "surface pro 8", "surface pro 7", "surface pro 12", "surface pro"],
+      "category": "2-in-1 Tablet / Laptop"
+    },
+    {
+      "canonical_name": "Surface Laptop",
+      "brand": "Microsoft",
+      "aliases": ["surface laptop 7", "surface laptop studio", "surface laptop go", "surface laptop"],
+      "category": "Premium Ultrabook"
+    },
+    {
+      "canonical_name": "Gram",
+      "brand": "LG",
+      "aliases": ["lg gram 14", "lg gram 16", "lg gram 17", "lg gram pro", "lg gram", "gram"],
+      "category": "Ultra Lightweight"
+    },
+    {
+      "canonical_name": "Aorus",
+      "brand": "Gigabyte",
+      "aliases": ["aorus 16", "aorus 15", "aorus"],
+      "category": "Flagship Gaming"
+    },
+    {
+      "canonical_name": "Aero",
+      "brand": "Gigabyte",
+      "aliases": ["aero 16", "aero 14", "aero"],
+      "category": "Creator"
+    },
+    {
+      "canonical_name": "Eagle",
+      "brand": "Gigabyte",
+      "aliases": ["eagle gl6j", "gigabyte eagle", "eagle"],
+      "category": "Performance Gaming"
+    },
+    {
+      "canonical_name": "Gigabyte Gaming",
+      "brand": "Gigabyte",
+      "aliases": ["gigabyte gaming a16", "gigabyte g5", "gigabyte g6", "gaming a16", "gigabyte gaming"],
+      "category": "Mainstream Gaming"
+    },
+    {
+      "canonical_name": "T-Book",
+      "brand": "Thunderobot",
+      "aliases": ["t-book 15a", "t-book 16", "t-book", "tbook"],
+      "category": "Mainstream"
+    },
+    {
+      "canonical_name": "Thunderobot 911",
+      "brand": "Thunderobot",
+      "aliases": ["thunderobot 911s", "thunderobot 911", "911s", "911"],
+      "category": "Gaming"
+    },
+    {
+      "canonical_name": "Aibook",
+      "brand": "Thunderobot",
+      "aliases": ["aibook 14 air", "aibook 14", "aibook"],
+      "category": "Thin & Light"
+    },
+    {
+      "canonical_name": "Galaxy Book",
+      "brand": "Samsung",
+      "aliases": ["galaxy book 4", "galaxy book 3", "galaxy book pro", "galaxy book"],
+      "category": "Premium Ultrabook"
+    },
+    {
+      "canonical_name": "Galaxy Chromebook",
+      "brand": "Samsung",
+      "aliases": ["galaxy chromebook go", "galaxy chromebook", "chromebook go"],
+      "category": "Chromebook"
+    },
+    {
+      "canonical_name": "MateBook",
+      "brand": "Huawei",
+      "aliases": ["matebook 14", "matebook 16", "matebook d14", "matebook d15", "matebook x pro", "matebook"],
+      "category": "Premium Ultrabook"
+    },
+    {
+      "canonical_name": "Liber",
+      "brand": "Avita",
+      "aliases": ["avita liber v14", "avita liber", "liber v14", "liber"],
+      "category": "Fashion Ultrabook"
+    },
+    {
+      "canonical_name": "CH",
+      "brand": "Fujitsu",
+      "aliases": ["fujitsu ch", "ch 9c13a1"],
+      "category": "Ultra-portable"
+    }
+  ],
+  "cpu": {
+    "brands": [
+      {
+        "canonical_name": "Intel",
+        "aliases": ["intel", "core", "ultra", "celeron", "pentium", "xeon"]
+      },
+      {
+        "canonical_name": "AMD",
+        "aliases": ["amd", "ryzen", "athlon", "threadripper"]
+      },
+      {
+        "canonical_name": "Apple",
+        "aliases": ["apple", "apple silicon", "m1", "m2", "m3", "m4", "m5", "a18"]
+      },
+      {
+        "canonical_name": "Qualcomm",
+        "aliases": ["qualcomm", "snapdragon", "x elite", "x plus"]
+      }
+    ],
+    "tiers": [
+      { "canonical_name": "Core Ultra 9", "brand": "Intel", "aliases": ["core ultra 9", "ultra 9", "u9"] },
+      { "canonical_name": "Core Ultra 7", "brand": "Intel", "aliases": ["core ultra 7", "ultra 7", "u7"] },
+      { "canonical_name": "Core Ultra 5", "brand": "Intel", "aliases": ["core ultra 5", "ultra 5", "u5"] },
+      { "canonical_name": "Core i9", "brand": "Intel", "aliases": ["core i9", "core-i9", "i9"] },
+      { "canonical_name": "Core i7", "brand": "Intel", "aliases": ["core i7", "core-i7", "i7"] },
+      { "canonical_name": "Core i5", "brand": "Intel", "aliases": ["core i5", "core-i5", "i5"] },
+      { "canonical_name": "Core i3", "brand": "Intel", "aliases": ["core i3", "core-i3", "i3"] },
+      { "canonical_name": "Core 7", "brand": "Intel", "aliases": ["core 7", "core-7"] },
+      { "canonical_name": "Core 5", "brand": "Intel", "aliases": ["core 5", "core-5"] },
+      { "canonical_name": "Core 3", "brand": "Intel", "aliases": ["core 3", "core-3"] },
+      { "canonical_name": "Ryzen AI 9", "brand": "AMD", "aliases": ["ryzen ai 9", "ai 9"] },
+      { "canonical_name": "Ryzen AI 7", "brand": "AMD", "aliases": ["ryzen ai 7", "ai 7"] },
+      { "canonical_name": "Ryzen AI 5", "brand": "AMD", "aliases": ["ryzen ai 5", "ai 5"] },
+      { "canonical_name": "Ryzen 9", "brand": "AMD", "aliases": ["ryzen 9", "ryzen-9", "r9"] },
+      { "canonical_name": "Ryzen 7", "brand": "AMD", "aliases": ["ryzen 7", "ryzen-7", "r7"] },
+      { "canonical_name": "Ryzen 5", "brand": "AMD", "aliases": ["ryzen 5", "ryzen-5", "r5"] },
+      { "canonical_name": "Ryzen 3", "brand": "AMD", "aliases": ["ryzen 3", "ryzen-3", "r3"] },
+      { "canonical_name": "Apple M5 Max", "brand": "Apple", "aliases": ["m5 max", "apple m5 max"] },
+      { "canonical_name": "Apple M5 Pro", "brand": "Apple", "aliases": ["m5 pro", "apple m5 pro"] },
+      { "canonical_name": "Apple M5", "brand": "Apple", "aliases": ["m5", "apple m5"] },
+      { "canonical_name": "Apple M4 Max", "brand": "Apple", "aliases": ["m4 max", "apple m4 max"] },
+      { "canonical_name": "Apple M4 Pro", "brand": "Apple", "aliases": ["m4 pro", "apple m4 pro"] },
+      { "canonical_name": "Apple M4", "brand": "Apple", "aliases": ["m4", "apple m4"] },
+      { "canonical_name": "Apple M3 Max", "brand": "Apple", "aliases": ["m3 max", "apple m3 max"] },
+      { "canonical_name": "Apple M3 Pro", "brand": "Apple", "aliases": ["m3 pro", "apple m3 pro"] },
+      { "canonical_name": "Apple M3", "brand": "Apple", "aliases": ["m3", "apple m3"] },
+      { "canonical_name": "Apple M2 Max", "brand": "Apple", "aliases": ["m2 max", "apple m2 max"] },
+      { "canonical_name": "Apple M2 Pro", "brand": "Apple", "aliases": ["m2 pro", "apple m2 pro"] },
+      { "canonical_name": "Apple M2", "brand": "Apple", "aliases": ["m2", "apple m2"] },
+      { "canonical_name": "Apple M1", "brand": "Apple", "aliases": ["m1", "apple m1"] },
+      { "canonical_name": "Apple A18 Pro", "brand": "Apple", "aliases": ["a18 pro", "apple a18 pro", "a18"] },
+      { "canonical_name": "Snapdragon X Elite", "brand": "Qualcomm", "aliases": ["snapdragon x elite", "x elite"] },
+      { "canonical_name": "Snapdragon X Plus", "brand": "Qualcomm", "aliases": ["snapdragon x plus", "x plus", "x1-26-100", "x1 26 101"] }
+    ]
+  },
+  "ram": {
+    "types": [
+      { "canonical_name": "DDR5", "aliases": ["sodimm ddr5", "ddr5", "ddr-5", "pc5"] },
+      { "canonical_name": "LPDDR5X", "aliases": ["lpddr5x", "lpddr-5x", "lp ddr5x"] },
+      { "canonical_name": "LPDDR5", "aliases": ["lpddr5", "lpddr-5", "lp ddr5"] },
+      { "canonical_name": "DDR4", "aliases": ["sodimm ddr4", "ddr4", "ddr-4", "pc4"] },
+      { "canonical_name": "LPDDR4X", "aliases": ["lpddr4x", "lpddr-4x"] },
+      { "canonical_name": "Unified Memory", "aliases": ["unified memory", "unified"] }
+    ],
+    "standard_capacities_gb": [4, 8, 12, 16, 18, 24, 32, 36, 48, 64, 96, 128]
+  },
+  "storage": {
+    "types": [
+      { "canonical_name": "SSD NVMe PCIe", "aliases": ["m.2 nvme pcie", "pcie nvme", "nvme pcie", "nvme", "pcie", "ssd m.2", "ssd nvme"] },
+      { "canonical_name": "SSD SATA", "aliases": ["sata ssd", "ssd 2.5", "sata 3"] },
+      { "canonical_name": "SSD", "aliases": ["ssd", "solid state drive"] }
+    ],
+    "standard_capacities_gb": [128, 256, 512, 1024, 2048, 4096, 8192]
+  },
+  "resolution": {
+    "standards": [
+      { "canonical_name": "FHD", "pixels": "1920x1080", "aliases": ["fullhd", "full hd", "fhd", "1080p", "1920x1080", "1920 x 1080"] },
+      { "canonical_name": "WUXGA", "pixels": "1920x1200", "aliases": ["wuxga", "fhd+", "fullhd+", "1920x1200", "1920 x 1200"] },
+      { "canonical_name": "2K", "pixels": "2560x1440", "aliases": ["2k", "qhd", "wqhd", "2560x1440", "2560 x 1440"] },
+      { "canonical_name": "Liquid Retina", "pixels": "2560x1664", "aliases": ["liquid retina", "liquid retina display", "2560x1664", "2560 x 1664", "2408x1506", "2408 x 1506", "2880x1864", "2880 x 1864"] },
+      { "canonical_name": "2.8K", "pixels": "2880x1800", "aliases": ["2.8k", "2.8 k", "2880x1800", "2880 x 1800"] },
+      { "canonical_name": "3K", "pixels": "3072x1920", "aliases": ["3k", "3024x1964", "3024 x 1964", "3072x1920"] },
+      { "canonical_name": "4K", "pixels": "3840x2160", "aliases": ["4k", "uhd", "3840x2160", "3840 x 2160"] },
+      { "canonical_name": "5K", "pixels": "5120x2880", "aliases": ["5k", "5120x2880"] }
+    ]
+  },
+  "gpu": {
+    "dedicated_chips": [
+      { "canonical_name": "NVIDIA GeForce RTX 5050", "aliases": ["rtx 5050", "rtx5050", "vga 8gb rtx5050"], "vram_gb": 8 },
+      { "canonical_name": "NVIDIA GeForce RTX 4090", "aliases": ["rtx 4090", "rtx4090", "vga 16gb rtx4090"], "vram_gb": 16 },
+      { "canonical_name": "NVIDIA GeForce RTX 4080", "aliases": ["rtx 4080", "rtx4080", "vga 12gb rtx4080"], "vram_gb": 12 },
+      { "canonical_name": "NVIDIA GeForce RTX 4070", "aliases": ["rtx 4070", "rtx4070", "vga 8gb rtx4070"], "vram_gb": 8 },
+      { "canonical_name": "NVIDIA GeForce RTX 4060", "aliases": ["rtx 4060", "rtx4060", "vga 8gb rtx4060"], "vram_gb": 8 },
+      { "canonical_name": "NVIDIA GeForce RTX 4050", "aliases": ["rtx 4050", "rtx4050", "vga 6gb rtx4050"], "vram_gb": 6 },
+      { "canonical_name": "NVIDIA GeForce RTX 3050", "aliases": ["rtx 3050", "rtx3050", "vga 6gb rtx3050", "vga 4gb rtx3050"], "vram_gb": 4 },
+      { "canonical_name": "NVIDIA GeForce RTX 2050", "aliases": ["rtx 2050", "rtx2050", "vga 4gb rtx2050"], "vram_gb": 4 },
+      { "canonical_name": "NVIDIA GeForce GTX 1650", "aliases": ["gtx 1650", "gtx1650", "vga 4gb gtx1650"], "vram_gb": 4 }
+    ],
+    "integrated_chips": [
+      { "canonical_name": "Intel Arc Graphics", "aliases": ["intel arc", "arc graphics", "vga arc"] },
+      { "canonical_name": "Intel Iris Xe Graphics", "aliases": ["iris xe", "intel iris"] },
+      { "canonical_name": "Intel Graphics", "aliases": ["intel graphics", "intel uhd graphics", "intel uhd"] },
+      { "canonical_name": "AMD Radeon 840M", "aliases": ["radeon 840m"] },
+      { "canonical_name": "AMD Radeon 780M", "aliases": ["radeon 780m"] },
+      { "canonical_name": "AMD Radeon 740M", "aliases": ["radeon 740m"] },
+      { "canonical_name": "AMD Radeon 610M", "aliases": ["radeon 610m"] },
+      { "canonical_name": "AMD Radeon Graphics", "aliases": ["amd radeon graphics", "radeon graphics", "radeon vega", "amd radeon"] },
+      { "canonical_name": "Apple Silicon GPU", "aliases": ["gpu 5 lõi", "gpu 8 lõi", "gpu 10 lõi", "gpu 12 lõi", "gpu 16 lõi", "gpu 32 lõi", "gpu 40 lõi", "apple gpu", "apple m5 gpu"] },
+      { "canonical_name": "Qualcomm Adreno", "aliases": ["qualcomm adreno", "adreno"] }
+    ]
+  },
+  "os": [
+    { "canonical_name": "Windows 11 Pro", "aliases": ["windows 11 pro", "win 11 pro", "win11 pro", "win11pro"] },
+    { "canonical_name": "Windows 11 Home", "aliases": ["windows 11 home", "win 11 home", "win11 home", "win11", "win 11", "windows 11"] },
+    { "canonical_name": "macOS", "aliases": ["macos", "mac os", "osx", "os x"] },
+    { "canonical_name": "Ubuntu / FreeDOS", "aliases": ["ubuntu", "freedos", "freeos", "no os"] }
+  ]
+}
