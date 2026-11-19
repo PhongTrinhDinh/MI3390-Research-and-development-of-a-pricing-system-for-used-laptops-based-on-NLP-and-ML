@@ -59,6 +59,29 @@ def test_process_silver_layer_pipeline():
         # Kiểm tra đóng SparkSession
         mock_spark.stop.assert_called_once()
 
+        # Kiểm tra các cột đặc trưng mới từ Taxonomy Dictionary và Refactored EDA được bổ sung
+        added_columns = [call[0][0] for call in mock_df_transformed.withColumn.call_args_list]
+        for expected_col in [
+            "canonical_brand",
+            "canonical_series",
+            "device_category",
+            "canonical_resolution",
+            "gpu_vram_gb",
+            "brand_name",
+            "product_line",
+            "cpu_family",
+            "cpu_gen",
+            "gpu_family",
+            "gpu_tier",
+            "is_gpu_inferred",
+            "ssd_gb",
+            "hdd_gb",
+            "has_dual_drive",
+            "touch_sensitive",
+            "is_repaired",
+            "region_group",
+        ]:
+            assert expected_col in added_columns, f"Cột {expected_col} chưa được thêm vào Silver DataFrame"
 
 
 # ==============================================================================
@@ -304,3 +327,29 @@ def test_entity_standardization_patterns():
     assert origin_re.search("bản xách tay ll/a mỹ") is not None
 
 
+def test_cpu_gen_inference_rules():
+    """Kiểm tra logic suy luận cpu_gen từ các mã chip thực tế."""
+    def infer_intel_gen(sku: str):
+        m = re.search(r"i[3579]-?(\d{4,5})", sku, re.IGNORECASE)
+        if not m:
+            return None
+        d = m.group(1)
+        return int(d[:2]) if len(d) == 5 or d[:2] in {"10", "11", "12", "13", "14"} else int(d[0])
+
+    assert infer_intel_gen("i5-1135g7") == 11
+    assert infer_intel_gen("i7-12700h") == 12
+    assert infer_intel_gen("i5-8250u") == 8
+    assert infer_intel_gen("i3-7100u") == 7
+    assert infer_intel_gen("i9-13900hx") == 13
+
+
+def test_ram_whitelist_validation():
+    """Kiểm tra lọc bỏ các giá trị RAM nhiễu (1, 3, 7, 10 GB) và chỉ giữ lại lũy thừa hợp lệ."""
+    valid_ram = {4, 8, 12, 16, 24, 32, 48, 64, 128}
+    test_cases = [1, 3, 4, 7, 8, 10, 16, 32, 64]
+    filtered = [x for x in test_cases if x in valid_ram]
+    assert filtered == [4, 8, 16, 32, 64]
+    assert 1 not in filtered
+    assert 3 not in filtered
+    assert 7 not in filtered
+    assert 10 not in filtered

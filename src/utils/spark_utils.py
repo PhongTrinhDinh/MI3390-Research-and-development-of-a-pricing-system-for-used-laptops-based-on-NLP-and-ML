@@ -33,8 +33,14 @@ def get_spark_session(app_name: str = "LaptopPricingPipeline") -> SparkSession:
     setup_spark_env()
     return (
         SparkSession.builder.appName(app_name)
+        .config("spark.driver.memory", "4g")
+        .config("spark.driver.maxResultSize", "2g")
+        .config("spark.default.parallelism", "4")
+        .config("spark.sql.shuffle.partitions", "4")
         .config("spark.sql.parquet.compression.codec", "snappy")
         .config("spark.sql.ansi.enabled", "false")
+        .config("spark.sql.codegen.wholeStage", "false")
+        .config("spark.python.worker.reuse", "true")
         .getOrCreate()
     )
 
