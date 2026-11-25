@@ -403,12 +403,12 @@ Từ dữ liệu đã làm sạch ở tầng Silver, phân tích hệ số tươ
 - [x] Thiết lập CI/CD Workflow định kỳ hàng tuần qua GitHub Actions và đồng bộ hóa lên AWS S3.
 
 ### 🔄 Giai đoạn 2: Model Training & Evaluation (Đang tiến hành)
-- [ ] Huấn luyện và so chuẩn (Benchmark) các mô hình hồi quy:
+- [x] Huấn luyện và so chuẩn (Benchmark) các mô hình hồi quy:
   - Baseline: Linear Regression / Ridge Regression.
   - Tree-based: Random Forest Regressor, Gradient-Boosted Trees (PySpark GBTRegressor).
   - State-of-the-art: LightGBM / XGBoost Regressor.
-- [ ] Tinh chỉnh siêu tham số (Hyperparameter Tuning qua Cross-Validation).
-- [ ] Đánh giá độ chính xác qua các chỉ số: $R^2$, RMSE, MAE, MAPE.
+- [x] Tinh chỉnh siêu tham số (Hyperparameter Tuning qua Cross-Validation).
+- [x] Đánh giá độ chính xác qua các chỉ số: $R^2$, RMSE, MAE, MAPE.
 
 ### 🚀 Giai đoạn 3: Serving & Productization (Kế hoạch tiếp theo)
 - [ ] Xây dựng RESTful API định giá thời gian thực bằng **FastAPI** (`serving/`).
