@@ -103,7 +103,6 @@ def process_gold_layer(spark: SparkSession = None):
             "is_like_new": 0,
             "is_upgraded": 0,
             "is_repaired": 0,
-            "has_dual_drive": 0,
             "is_gpu_inferred": 0,
             "seller_sold_count": 0,
         })
@@ -111,27 +110,29 @@ def process_gold_layer(spark: SparkSession = None):
         
         # 4. Phân nhóm Đặc trưng (Features Selection theo Refactored Silver & EDA)
         '''A. Nhóm đặc trưng cốt lõi (Must-have features) & Bổ trợ giá trị (Value-add features):
-            - Numeric: ram_gb, ssd_gb, hdd_gb, cpu_gen, screen_size_inch, seller_sold_count, year_production
-            - Categorical: brand_name, product_line, device_category, cpu_vendor, cpu_family,
-                           gpu_type, gpu_family, resolution, touch_sensitive, origin_type, region_group
-            - Binary: has_dual_drive, has_warranty, has_bundle, is_like_new, is_upgraded, is_repaired, is_gpu_inferred
+            - Numeric: ram_gb, ssd_gb, hdd_gb, cpu_gen, screen_size_inch, seller_sold_count
+            - Categorical: canonical_brand, canonical_series, device_category, cpu_vendor, cpu_family,
+                           gpu_type, gpu_tier, gpu_family, canonical_resolution, touch_sensitive, origin_type, region_group
+            - Binary: has_warranty, has_bundle, is_like_new, is_upgraded, is_repaired, is_gpu_inferred
         
-         B. Đã loại bỏ các biến thiếu cực đoan (>95% missing) & tương quan gần 0 (r ≈ 0):
-            - Thiếu cực đoan: year_purchase (99.8%), battery_cycles/hours/pct (>99%), condition_pct (97.8%),
-                              origin_country (95.2%), is_new_seal (98.8%), battery_condition
-            - Tương quan r ≈ 0: seller_rating (0.002), is_seller_rating_missing
-            - Đã gom nhóm: warranty_months, warranty_type -> has_warranty; bundles/gift_* -> has_bundle;
-                           repair_status -> is_repaired (chỉ 14 dòng repaired); ward_name -> region_group'''
+         B. Đã loại bỏ các biến thiếu cực đoan (>95% missing), tương quan r ≈ 0, hoặc near-zero variance:
+            - Thiếu cực đoan: year_purchase (99.8%), year_production (98.4%), battery_cycles/hours/pct (>99%),
+                              condition_pct (97.8%), origin_country (95.2%), is_new_seal (98.8%), battery_condition
+            - Tương quan r ≈ 0: seller_rating (0.028), is_seller_rating_missing
+            - Near-zero variance: has_dual_drive (chỉ có 3/9.497 dòng = 0.03% positive)
+            - Đã chuẩn hóa: brand_name -> canonical_brand; product_line -> canonical_series;
+                           resolution -> canonical_resolution; bổ sung gpu_tier; ward_name -> region_group'''
 
         categorical_cols = [
-            "brand_name",
-            "product_line",
+            "canonical_brand",
+            "canonical_series",
             "device_category",
             "cpu_vendor",
             "cpu_family",
             "gpu_type",
+            "gpu_tier",
             "gpu_family",
-            "resolution",
+            "canonical_resolution",
             "touch_sensitive",
             "origin_type",
             "region_group",
@@ -139,7 +140,6 @@ def process_gold_layer(spark: SparkSession = None):
         df_clean = df_preprocessed.fillna({c: "unknown" for c in categorical_cols})
 
         binary_cols = [
-            "has_dual_drive",
             "has_warranty",
             "has_bundle",
             "is_like_new",
@@ -158,7 +158,6 @@ def process_gold_layer(spark: SparkSession = None):
             "cpu_gen",
             "screen_size_inch",
             "seller_sold_count",
-            "year_production",
         ]
         for c in numeric_cols:
             if c in df_clean.columns:
@@ -212,7 +211,17 @@ def process_gold_layer(spark: SparkSession = None):
         # Tạo biến mục tiêu chuẩn hóa Log-Price song song với target_price
         df_gold = df_gold.withColumn("log_price", log1p(col("target_price")))
 
-        df_gold_output = df_gold.select("post_id", "features", "target_price", "log_price")
+        # Dual-Format Output: Lưu song song cột Vector (cho PySpark ML) và các cột Tabular Clean (cho Scikit-Learn/XGBoost/LightGBM)
+        tabular_numeric_cols = [f"{c}_imputed" for c in numeric_cols]
+        df_gold_output = df_gold.select(
+            "post_id",
+            "target_price",
+            "log_price",
+            "features",
+            *binary_cols,
+            *tabular_numeric_cols,
+            *categorical_cols,
+        )
 
         logger.info(f"Saving Gold features Parquet to: {gold_dir}")
         os.makedirs(gold_dir, exist_ok=True)
