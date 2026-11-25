@@ -104,8 +104,41 @@ def test_process_gold_layer_success(mock_spark_environment):
         mock_pipeline_inst.fit.assert_called_once()
         mock_pipeline_model.transform.assert_called_once()
 
-        # 7. Kiểm tra select đúng tên cột: post_id, features, target_price, log_price
-        mock_df_transformed.select.assert_called_once_with("post_id", "features", "target_price", "log_price")
+        # 7. Kiểm tra select đúng tên cột: Dual-Format (post_id, target_price, log_price, features + Tabular Clean features)
+        expected_cols = [
+            "post_id",
+            "target_price",
+            "log_price",
+            "features",
+            # binary_cols
+            "has_warranty",
+            "has_bundle",
+            "is_like_new",
+            "is_upgraded",
+            "is_repaired",
+            "is_gpu_inferred",
+            # tabular_numeric_cols
+            "ram_gb_imputed",
+            "ssd_gb_imputed",
+            "hdd_gb_imputed",
+            "cpu_gen_imputed",
+            "screen_size_inch_imputed",
+            "seller_sold_count_imputed",
+            # categorical_cols
+            "canonical_brand",
+            "canonical_series",
+            "device_category",
+            "cpu_vendor",
+            "cpu_family",
+            "gpu_type",
+            "gpu_tier",
+            "gpu_family",
+            "canonical_resolution",
+            "touch_sensitive",
+            "origin_type",
+            "region_group",
+        ]
+        mock_df_transformed.select.assert_called_once_with(*expected_cols)
 
         # 8. Kiểm tra lưu dữ liệu Gold Parquet với snappy compression
         mock_df_transformed.write.format.assert_called_once_with("parquet")
