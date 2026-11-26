@@ -19,11 +19,11 @@ ENV/
 *.key
 
 # Data and generated model artifacts (keep large/local files out of Git)
-data/
+#data/
 data/raw/
 data/interim/
-data/processed/
-data/features/
+#data/processed/
+#data/features/
 datasets/
 artifacts/
 models/
@@ -41,6 +41,8 @@ checkpoints/
 *.tfrecord
 
 # Experiment tracking, logs, and caches
+catboost_info/
+**/catboost_info/
 mlruns/
 mlartifacts/
 wandb/

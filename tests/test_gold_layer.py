@@ -15,8 +15,11 @@ def mock_spark_environment():
     return sc
 
 
-def test_process_gold_layer_success(mock_spark_environment):
+def test_process_gold_layer_success(mock_spark_environment, tmp_path, monkeypatch):
     """Kiểm tra toàn bộ luồng pipeline Gold Layer: lọc outlier giá, feature engineering, lưu Parquet, lưu Model, đóng Spark."""
+    monkeypatch.setenv("DATALAKE_GOLD_DIR", str(tmp_path / "gold_layer"))
+    monkeypatch.setenv("MODEL_TRANSFORMER_DIR", str(tmp_path / "models"))
+
     mock_spark = MagicMock(name="SparkSession")
     mock_reader = MagicMock(name="DataFrameReader")
     mock_df_silver = MagicMock(name="DataFrameSilver")
@@ -114,7 +117,6 @@ def test_process_gold_layer_success(mock_spark_environment):
             "has_warranty",
             "has_bundle",
             "is_like_new",
-            "is_upgraded",
             "is_repaired",
             "is_gpu_inferred",
             # tabular_numeric_cols

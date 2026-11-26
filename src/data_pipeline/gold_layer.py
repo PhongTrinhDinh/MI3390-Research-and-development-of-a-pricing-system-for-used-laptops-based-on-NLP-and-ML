@@ -101,7 +101,6 @@ def process_gold_layer(spark: SparkSession = None):
             "has_warranty": 0,
             "has_bundle": 0,
             "is_like_new": 0,
-            "is_upgraded": 0,
             "is_repaired": 0,
             "is_gpu_inferred": 0,
             "seller_sold_count": 0,
@@ -113,13 +112,14 @@ def process_gold_layer(spark: SparkSession = None):
             - Numeric: ram_gb, ssd_gb, hdd_gb, cpu_gen, screen_size_inch, seller_sold_count
             - Categorical: canonical_brand, canonical_series, device_category, cpu_vendor, cpu_family,
                            gpu_type, gpu_tier, gpu_family, canonical_resolution, touch_sensitive, origin_type, region_group
-            - Binary: has_warranty, has_bundle, is_like_new, is_upgraded, is_repaired, is_gpu_inferred
+            - Binary: has_warranty, has_bundle, is_like_new, is_repaired, is_gpu_inferred
         
-         B. Đã loại bỏ các biến thiếu cực đoan (>95% missing), tương quan r ≈ 0, hoặc near-zero variance:
+         B. Đã loại bỏ các biến thiếu cực đoan (>95% missing), tương quan r ≈ 0, near-zero variance, hoặc không có ý nghĩa thống kê ANOVA:
             - Thiếu cực đoan: year_purchase (99.8%), year_production (98.4%), battery_cycles/hours/pct (>99%),
                               condition_pct (97.8%), origin_country (95.2%), is_new_seal (98.8%), battery_condition
             - Tương quan r ≈ 0: seller_rating (0.028), is_seller_rating_missing
             - Near-zero variance: has_dual_drive (chỉ có 3/9.497 dòng = 0.03% positive)
+            - Không có ý nghĩa thống kê (One-Way ANOVA): is_upgraded (F = 0.13, p = 0.7197 > 0.05)
             - Đã chuẩn hóa: brand_name -> canonical_brand; product_line -> canonical_series;
                            resolution -> canonical_resolution; bổ sung gpu_tier; ward_name -> region_group'''
 
@@ -143,7 +143,6 @@ def process_gold_layer(spark: SparkSession = None):
             "has_warranty",
             "has_bundle",
             "is_like_new",
-            "is_upgraded",
             "is_repaired",
             "is_gpu_inferred",
         ]
@@ -224,6 +223,9 @@ def process_gold_layer(spark: SparkSession = None):
         )
 
         logger.info(f"Saving Gold features Parquet to: {gold_dir}")
+        if os.path.exists(gold_dir):
+            import shutil
+            shutil.rmtree(gold_dir, ignore_errors=True)
         os.makedirs(gold_dir, exist_ok=True)
         df_gold_output.write.format("parquet") \
             .option("compression", "snappy") \
